@@ -3,10 +3,24 @@ import { NextResponse } from "next/server";
 const DATA_SOURCE_URL = "https://jsonplaceholder.typicode.com/todos";
 const API_KEY: string = process.env.DATA_API_KEY as string;
 
-export async function GET() {
+export async function GET(request: Request) {
+  const origin = request.headers.get('origin');
+
   const res = await fetch(DATA_SOURCE_URL);
   const todos: Todo[] = await res.json();
-  return NextResponse.json(todos);
+
+  // CORS problem
+  // test on google.com open console and fetch('http://localhost:3000/api/todos')
+  // return NextResponse.json(todos);
+
+  // no CORS problem
+  // test on google.com open console and fetch('http://localhost:3000/api/todos')
+  return new NextResponse(JSON.stringify(todos), {
+    headers: {
+      'Access-Control-Allow-Origin': origin || "*",
+      'Content-Type': 'application/json'
+    }
+  });
 }
 
 // type: GET
